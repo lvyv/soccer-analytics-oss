@@ -8,6 +8,7 @@ import glob
 import dash_bootstrap_components as dbc
 from fig_generator import fig_from_json
 from initial_figures import initial_figure_radar, initial_figure_simulator, initial_figure_events
+import dash_daq as daq
 
 # Theme export from Theme Builder to tailor the app's appearance
 theme = {
@@ -135,69 +136,61 @@ tracking_files = [s for s in tracking_files if "json" in s]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
-#os.environ["SNAPSHOT_DATABASE_URL"] = os.environ.get("DATABASE_URL", "postgres://username:password@127.0.0.1:5432") if os.name == 'nt' else os.environ.get("DATABASE_URL", "sqlite:///snapshot-dev.db")
-#snap = dash_snapshots.DashSnapshots(app)
-#celery_instance = snap.celery_instance
 
 # Configure controls using Dash Design Kit
 static_graph_controls = [
-    dbc.Card(
-        dcc.Dropdown(
+    dbc.FormGroup(
+        [
+        dbc.Label('Event File:'),
+        dbc.Select(
             id= 'event-file',
             options=[
                 {'label': i, 'value': i}
                 for i in event_files
             ],
-            multi=False,
             value=None,
             placeholder="Select a file for events"
         ),
-
+    ]
     ),
-    dbc.Card(
-        dcc.Dropdown(
-            id='team-dropdown',
-            multi=False,
-            options=[{'label': i, 'value': i} for i in ['Home', 'Away']],
-            value='Home',
-            placeholder="Select a file for events",
-        ),
+    dbc.FormGroup(
+        [
+            dbc.Label('Team:'),
+            dbc.Select(
+                id='team-dropdown',
+                options=[{'label': i, 'value': i} for i in ['Home', 'Away']],
+                value='Home',
+                placeholder="Select a file for events",
+            ),
+        ]
     ),
 
 ]
+
 simulator_controls = [
-    dbc.Card(
-        dcc.Dropdown(
+    dbc.FormGroup([
+        dbc.Label('Team:'),
+        dbc.Select(
             id='tracking-file',
             options=[
                 {'label': i, 'value': i}
                 for i in tracking_files
             ],
-            multi=False,
             value=None,
             placeholder="Select a file for tracking",
         ),
-    ),
+    ]),
 
     dbc.Card(
-        dcc.Slider(
-            id='speed-slider',
-            min=100,
-            max=500,
-            step=1,
-            value=300,
-            marks={
-                100: '1',
-                200: '2',
-                300: '3',
-                400: '4',
-                500: '5'
-            },
-            included=True
-        ),
+        daq.Knob(
+          id= 'speed-knob',
+          label='Playback Speed',
+          value=3,
+          max=5
+        )
     ),
+    dbc.Button('Submit', className="mr-2", id='submit-button', color="info")
 
-    html.Button('Submit', id='submit-button')
 ]
 
 # Configure main app layout
@@ -205,10 +198,8 @@ app.layout = dbc.Container(children=[
     html.Header([
         html.Title('Match Analysis Tool'),
     ]),
+        dbc.Card(dbc.Row([dbc.Col(c) for c in static_graph_controls], form=True), body=True),
 
-    dbc.Row([
-        dbc.Card(static_graph_controls),
-    ]),
     dbc.Row([
         dbc.Col(
             dbc.Card(children=[
@@ -299,7 +290,7 @@ app.layout = dbc.Container(children=[
 
     dbc.Row([
         dbc.Col(
-        dbc.Card(simulator_controls),
+        dbc.Card(simulator_controls), width=3
         ),
         dbc.Col(
             dbc.Card(children=[
@@ -359,7 +350,7 @@ def radar_graph(radar_file, team):
 # Callback for animated game simulation graph
 @app.callback(
     Output('game-simulation', 'figure'),
-    Input('submit-button','n_clicks'), State('speed-slider', 'value'), State('tracking-file', 'value'), prevent_initial_call=True)
+    Input('submit-button','n_clicks'), State('speed-knob', 'value'), State('tracking-file', 'value'), prevent_initial_call=True)
 def game_simulation_graph(n_clicks, speed, filename):
     game_speed = 600 - speed
     fig = fig_from_json('data/'+filename)
@@ -378,6 +369,7 @@ def game_simulation_graph(n_clicks, speed, filename):
                       yanchor='bottom')
                             ])
     fig.update_layout(autosize=True)
+    fig.update_layout(modebar=dict(bgcolor='#303030', orientation='v'))
     # Disable zoom. It just distorts and is not fine-tunable
     fig.layout.xaxis.fixedrange = True
     fig.layout.yaxis.fixedrange = True

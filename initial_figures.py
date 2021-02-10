@@ -25,6 +25,7 @@ def initial_figure_simulator():
     fig.update_xaxes(title_text='')
     fig.update_yaxes(title_text='')
     fig.update_layout(margin=dict(l=80, r=80, b=10, t=20))
+    fig.update_layout(modebar=dict(bgcolor='rgba(0, 0, 0, 0)'))
     image_file = 'assets/Pitch.png'
     image_path = os.path.join(os.getcwd(), image_file)
 
@@ -51,6 +52,14 @@ def initial_figure_simulator():
                 scaleratio=1)
 
     fig.update_layout(autosize=True)
+
+    fig.update_layout(template='plotly_dark',
+                      xaxis=dict(
+                          showgrid=False,
+                          showticklabels=False),
+                      plot_bgcolor='rgba(0, 0, 0, 0)',
+                      paper_bgcolor='rgba(0, 0, 0, 0)'
+                      )
     return fig
 
 # Create initial placeholder figure for event plot

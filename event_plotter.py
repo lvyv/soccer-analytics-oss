@@ -321,7 +321,7 @@ def plotEvents(eventType, filename, team, team_on_left):
     fig.update_layout(margin=dict(l=10, r=50, b=10, t=30))
 
     # Sets modebar colour to transparent. If it's black then it looks weird and doesn't match the background colour
-    fig.update_layout(modebar=dict(bgcolor='rgba(0, 0, 0, 0)'))
+    fig.update_layout(modebar=dict(bgcolor='rgba(0, 0, 0, 0)', orientation='v'))
 
     # Sets background to be transparent
     fig.update_layout(template='plotly_dark',
