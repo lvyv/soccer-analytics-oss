@@ -1,16 +1,12 @@
 import dash
-import dash_design_kit as ddk
 import dash_core_components as dcc
 from event_plotter import plotEvents
 from dash.dependencies import Input, Output, State
 from team_radar import team_radar_builder
 import dash_html_components as html
 import glob
-#import os
+import dash_bootstrap_components as dbc
 from fig_generator import fig_from_json
-#from ids import IDS
-#import pages
-#import traceback
 from initial_figures import initial_figure_radar, initial_figure_simulator, initial_figure_events
 
 # Theme export from Theme Builder to tailor the app's appearance
@@ -137,7 +133,7 @@ tracking_file_list = (glob.glob("data/*.json"))
 tracking_files = [w.replace('data/', '') for w in tracking_file_list]
 tracking_files = [s for s in tracking_files if "json" in s]
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
 #os.environ["SNAPSHOT_DATABASE_URL"] = os.environ.get("DATABASE_URL", "postgres://username:password@127.0.0.1:5432") if os.name == 'nt' else os.environ.get("DATABASE_URL", "sqlite:///snapshot-dev.db")
 #snap = dash_snapshots.DashSnapshots(app)
@@ -145,7 +141,7 @@ server = app.server
 
 # Configure controls using Dash Design Kit
 static_graph_controls = [
-    ddk.ControlItem(
+    dbc.Card(
         dcc.Dropdown(
             id= 'event-file',
             options=[
@@ -153,26 +149,24 @@ static_graph_controls = [
                 for i in event_files
             ],
             multi=False,
-            value=None
+            value=None,
+            placeholder="Select a file for events"
         ),
-        label='Events File:',
+
     ),
-    ddk.ControlItem(
+    dbc.Card(
         dcc.Dropdown(
             id='team-dropdown',
             multi=False,
             options=[{'label': i, 'value': i} for i in ['Home', 'Away']],
-            value='Home'
+            value='Home',
+            placeholder="Select a file for events",
         ),
-        label='Team:',
     ),
-
-    #dcc.Location(id=IDS['LOCATION']),
-    #html.Div(id='content')
 
 ]
 simulator_controls = [
-    ddk.ControlItem(
+    dbc.Card(
         dcc.Dropdown(
             id='tracking-file',
             options=[
@@ -180,12 +174,12 @@ simulator_controls = [
                 for i in tracking_files
             ],
             multi=False,
-            value=None
+            value=None,
+            placeholder="Select a file for tracking",
         ),
-        label='Tracking File:',
     ),
 
-    ddk.ControlItem(
+    dbc.Card(
         dcc.Slider(
             id='speed-slider',
             min=100,
@@ -201,128 +195,125 @@ simulator_controls = [
             },
             included=True
         ),
-        label='Playback Speed:',
     ),
 
     html.Button('Submit', id='submit-button')
 ]
 
 # Configure main app layout
-app.layout = ddk.App(theme=theme, children=[
-    ddk.Header([
-        ddk.Logo(src=app.get_asset_url('logo.png')),
-        ddk.Title('Match Analysis Tool'),
-        ddk.Menu([
+app.layout = dbc.Container(children=[
+    html.Header([
+        html.Title('Match Analysis Tool'),
+    ]),
 
-            html.Div(id='button-container', children=html.Span([
-                html.Span(id='take-snapshot-status'),
-                html.Button('Take Snapshot', id='take-snapshot'),
-            ])),
-
-            dcc.Link(
-                href=app.get_relative_path('/'),
-                children='Home'
+    dbc.Row([
+        dbc.Card(static_graph_controls),
+    ]),
+    dbc.Row([
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon1",
+                            children=[dcc.Graph(id='radar-graph', figure=initial_figure_radar(),
+                            config={'modeBarButtonsToRemove': ['toggleSpikelines', 'pan2d', 'autoScale2d','resetScale2d']})], type="default",
+                            )
+                ]
             ),
-
-            dcc.Link(
-                href=app.get_relative_path('/archive'),
-                children='Archive'
+        ),
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon2",
+                            children=[dcc.Graph(id='events-shots', figure=initial_figure_events(),
+                            config = {'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type = "default",
+                            )
+                ]
             )
-        ])
-    ]),
-
-    ddk.Row([
-        ddk.ControlCard(static_graph_controls,  orientation='horizontal'),
-    ]),
-    ddk.Row([
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon1",
-                        children=[ddk.Graph(id='radar-graph', figure=initial_figure_radar(),
-                        config={'modeBarButtonsToRemove': ['toggleSpikelines', 'pan2d', 'autoScale2d','resetScale2d']})], type="default",
-                        )
-            ]
-        ),
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon2",
-                        children=[ddk.Graph(id='events-shots', figure=initial_figure_events(),
-                        config = {'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type = "default",
-                        )
-            ]
         ),
     ]),
 
-    ddk.Row([
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon3",
-                        children=[ddk.Graph(id='events-assists', figure=initial_figure_events(),
-                                            config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
-                        )
-            ]
+    dbc.Row([
+        dbc.Col(
+            dbc.Card( children=[
+                dcc.Loading(id="loading-icon3",
+                            children=[dcc.Graph(id='events-assists', figure=initial_figure_events(),
+                                                config={'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
+                            )
+                ]
+            )
          ),
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon4",
-                        children=[ddk.Graph(id='events-progressive-passes', figure=initial_figure_events(),
-                                            config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
-                        )
-            ]
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon4",
+                            children=[dcc.Graph(id='events-progressive-passes', figure=initial_figure_events(),
+                                                config={'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
+                            )
+                ]
+            )
         ),
     ]),
 
-    ddk.Row([
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon5",
-                        children=[ddk.Graph(id='events-crosses', figure=initial_figure_events(),
-                                            config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines']})], type="default",
-                        )
-            ]
+    dbc.Row([
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon5",
+                            children=[dcc.Graph(id='events-crosses', figure=initial_figure_events(),
+                                                config={'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines']})], type="default",
+                            )
+                ]
+            )
          ),
-        ddk.Card(width=50, children=[
-            dcc.Loading(id="loading-icon6",
-                        children=[ddk.Graph(id='events-set-plays', figure=initial_figure_events(),
-                                            config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
-                        )
-            ]
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon6",
+                            children=[dcc.Graph(id='events-set-plays', figure=initial_figure_events(),
+                                                config={'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
+                            )
+                ]
+            )
         ),
     ]),
 
-    ddk.Row([
-        ddk.ControlCard(simulator_controls, width=25),
-        ddk.Card(width=75, children=[
-            dcc.Loading(id="loading-icon7",
-                        children=[ddk.Graph(id='game-simulation', animate=True,  figure=initial_figure_simulator(),
-                                            config={'modeBarButtonsToAdd':['drawline',
-                                        'drawopenpath',
-                                        'drawcircle',
-                                        'drawrect',
-                                        'eraseshape'
-                                       ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
-                                            )
-        ]),
+    dbc.Row([
+        dbc.Col(
+        dbc.Card(simulator_controls),
+        ),
+        dbc.Col(
+            dbc.Card(children=[
+                dcc.Loading(id="loading-icon7",
+                            children=[dcc.Graph(id='game-simulation', animate=True,  figure=initial_figure_simulator(),
+                                                config={'modeBarButtonsToAdd':['drawline',
+                                            'drawopenpath',
+                                            'drawcircle',
+                                            'drawrect',
+                                            'eraseshape'
+                                           ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
+                                                )
+            ]),
+        )
     ]),
 ])
 
@@ -400,70 +391,6 @@ def game_simulation_graph(n_clicks, speed, filename):
         )
     )
     return fig
-
-
-'''# Snapshot callback
-@app.callback(
-    [Output('content', 'children'),
-     Output('button-container', 'style')],
-    [Input(IDS['LOCATION'], 'pathname')])
-def display_content(pathname):
-    button_style = {'hidden': {'width': 0, 'visibility': 'hidden'}, 'displayed': None}
-    page_name = app.strip_relative_path(pathname)
-    if not page_name:  # None or ''
-        return [pages.home.layout(), button_style['displayed']]
-    elif page_name == 'archive':
-        return [pages.archive.layout(), button_style['hidden']]
-    elif page_name.startswith("snapshot-"):
-        return [pages.snapshot.layout(page_name), button_style['hidden']]
-    elif page_name == 'dev':
-        # Display a report with mock data for development purposes
-        return [pages.snapshot.report(), button_style['hidden']]
-    else:
-        return ['404', button_style['hidden']]
-
-
-@app.callback(
-    Output('take-snapshot-status', 'children'),
-    [Input('take-snapshot', 'n_clicks')],
-    [State(IDS['GRAPH-1'], 'figure'),
-     State(IDS['GRAPH-2'], 'figure'),
-     State(IDS['GRAPH-3'], 'figure')],
-    prevent_initial_call=True)
-def save_snapshot(n_clicks, figure_1, figure_2, figure_3):
-    try:
-        # Submit task to save snapshot data and generate PDF in background
-        snap.snapshot_save_async(
-            save_snapshot_in_background,
-            figure_1, figure_2, figure_3
-        )
-        return 'Saved!'
-    except Exception as e:
-        traceback.print_exc()
-        return 'An error occurred saving this snapshot'
-
-
-@snap.celery_instance.task
-@snap.snapshot_async_wrapper(save_pdf=True)
-def save_snapshot_in_background(figure_1, figure_2, figure_3):
-    # This function is called in a separate task queue managed by celery
-    # This function's parameters (temperature, pressure, humidity) are
-    # provided by the callback above with `snap.snapshot_save_async`
-
-    # Whatever is returned by this function will be saved to the database
-    # with the `snapshot_id`. It needs to be JSON-serializable
-
-    # In this case, we're just returning a pandas dataframe
-    # This dataframe is loaded by `snapshot.layout` and transformed
-    # into a set of `ddk.Report` & `ddk.Page` components.
-    # This allows you to change your `ddk.Report` & `ddk.Page` reports
-    # for older datasets.
-
-    # You could also return a `ddk.Report` etc here if you want previously
-    # saved reports to not change when you deploy new changes to your
-    # `ddk.Report` layout code
-    return {'figure-1': figure_1, 'figure-2': figure_2, 'figure-3': figure_3}'''
-
 
 if __name__ == '__main__':
     app.run_server(debug=False)
