@@ -72,11 +72,12 @@ simulator_controls = [
 
     dbc.Card(
         daq.Knob(
-          id= 'speed-knob',
-          label='Playback Speed',
-          value=3,
-          max=5,
-          color={'default':'#3598DC'}
+            id= 'speed-knob',
+            label='Playback Speed',
+            value=3,
+            max=5,
+            color={'default':'#3598DC'},
+            size=100
         )
     ),
     dbc.Button('Submit', className="mr-2", id='submit-button', color="info")
