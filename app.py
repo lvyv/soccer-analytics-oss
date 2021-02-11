@@ -135,6 +135,7 @@ tracking_files = [w.replace('data/', '') for w in tracking_file_list]
 tracking_files = [s for s in tracking_files if "json" in s]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+
 server = app.server
 
 # Configure controls using Dash Design Kit
@@ -222,9 +223,11 @@ app.layout = dbc.Container(children=[
                                            ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type = "default",
                             )
                 ]
-            )
+            ),
         ),
-    ]),
+    ], form=True, no_gutters=False),
+
+    html.Br(),
 
     dbc.Row([
         dbc.Col(
@@ -239,7 +242,7 @@ app.layout = dbc.Container(children=[
                                            ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
                             )
                 ]
-            )
+            ),
          ),
         dbc.Col(
             dbc.Card(children=[
@@ -253,9 +256,11 @@ app.layout = dbc.Container(children=[
                                            ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
                             )
                 ]
-            )
+            ),
         ),
-    ]),
+    ],form=True, no_gutters=False),
+
+    html.Br(),
 
     dbc.Row([
         dbc.Col(
@@ -270,7 +275,7 @@ app.layout = dbc.Container(children=[
                                            ], 'modeBarButtonsToRemove':['toggleSpikelines']})], type="default",
                             )
                 ]
-            )
+            ),
          ),
         dbc.Col(
             dbc.Card(children=[
@@ -284,9 +289,11 @@ app.layout = dbc.Container(children=[
                                            ], 'modeBarButtonsToRemove':['toggleSpikelines', 'pan2d', 'autoScale2d', 'resetScale2d']})], type="default",
                             )
                 ]
-            )
+            ),
         ),
-    ]),
+    ], form=True, no_gutters=False),
+
+    html.Br(),
 
     dbc.Row([
         dbc.Col(
@@ -305,7 +312,7 @@ app.layout = dbc.Container(children=[
                                                 )
             ]),
         )
-    ]),
+    ], form=True, no_gutters=False),
 ])
 
 # Callback for events data
