@@ -56,7 +56,7 @@ def team_radar_builder(filename, team_id):
 
     # Create initial figure
     fig = go.Figure()
-    colormap = {'Home': 'gray', 'Away':'#009BFF'}
+    colormap = {'Home': 'lightskyblue', 'Away':'mintcream'}
     normalized_df['Team'] = normalized_df.index
     team_row_normalized = normalized_df.loc[normalized_df['Team'] == team_id]
     team_row_normalized.drop('Team', axis=1, inplace=True)
@@ -75,9 +75,8 @@ def team_radar_builder(filename, team_id):
         theta=theta_values,
         fill='toself',
         name=team_id,
-        opacity=.40,
+        opacity=.25,
         fillcolor=colormap[team_id],
-        line_color=colormap[team_id],
         hovertext=pki_values,
         hovertemplate="%{theta}:" + " %{hovertext}<br>"
     ))
@@ -86,14 +85,14 @@ def team_radar_builder(filename, team_id):
     fig.update_traces(mode="lines+markers",
                       line_color=colormap[team_id],
                       marker=dict(
-                          color="lightgrey",
+                          color="white",
                           symbol="circle",
-                          size=6
+                          size=4
                       ))
 
     fig.update_layout(title = "Match KPIs",
             polar=dict(
-            bgcolor='#282828',
+            bgcolor='rgba(0, 0, 0, 0)',
             radialaxis=dict(
                 visible=True,
                 range=[0, 1],

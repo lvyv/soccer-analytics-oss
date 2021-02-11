@@ -172,7 +172,7 @@ static_graph_controls = [
 
 simulator_controls = [
     dbc.FormGroup([
-        dbc.Label('Team:'),
+        dbc.Label('Tracking File:'),
         dbc.Select(
             id='tracking-file',
             options=[
@@ -189,7 +189,8 @@ simulator_controls = [
           id= 'speed-knob',
           label='Playback Speed',
           value=3,
-          max=5
+          max=5,
+          color={'default':'#3598DC'}
         )
     ),
     dbc.Button('Submit', className="mr-2", id='submit-button', color="info")

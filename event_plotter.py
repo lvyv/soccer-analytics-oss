@@ -201,7 +201,8 @@ def plotEvents(eventType, filename, team, team_on_left):
         else:
             annotations_list = []
 
-        color_discrete_map = {'FREE KICK':'#009BFF','Assists to Shot':'#009BFF','Incomplete':'grey' ,'SHOT':'#009BFF', 'CROSS':'#0B2B5A', 'PASS': '#009BFF', 'BALL LOST': 'grey', 'BALL OUT':'darkgrey'}
+        color_discrete_map = {'FREE KICK':'#009BFF','Assists to Shot':'#009BFF','Incomplete':'grey' ,'SHOT':'#009BFF', 'CROSS':'#0B2B5A', 'PASS': '#009BFF', 'BALL LOST': 'grey', 'BALL OUT':'darkgrey',
+                              'Assist to shot': '#009BFF', 'CORNER KICK':'#009BFF'}
         df['size'] = 9
 
         # Main graph for A > B events
