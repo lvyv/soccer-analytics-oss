@@ -125,7 +125,7 @@ def initial_figure_radar():
 
     fig.add_trace(go.Scatterpolar(
         r=r_values,
-        theta= ['Chances', 'Crosses', 'Goals', 'Offsides', 'Passes','Pass<br>Assists', 'Running<br>w/ball','Shots not<br>on target', 'Shots on<br>target', 'Yellow<br>cards'],
+        theta= ['Set<br>Plays', 'Passes', 'Balls<br>Lost', 'Recoveries', 'Challenges', 'Shots', 'Interceptions', 'Crosses', 'Long<br>Balls', 'Free<br>Kicks'],
         fill='toself',
         opacity=.50
     ))

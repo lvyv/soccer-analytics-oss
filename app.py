@@ -134,7 +134,9 @@ tracking_file_list = (glob.glob("data/*.json"))
 tracking_files = [w.replace('data/', '') for w in tracking_file_list]
 tracking_files = [s for s in tracking_files if "json" in s]
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"},
+    ],)
 
 server = app.server
 
@@ -195,11 +197,12 @@ simulator_controls = [
 ]
 
 # Configure main app layout
-app.layout = dbc.Container(children=[
+app.layout = dbc.Container(fluid=True, children=[
     html.Header([
-        html.Title('Match Analysis Tool'),
+        html.H3('Match Analysis Tool')
     ]),
-        dbc.Card(dbc.Row([dbc.Col(c) for c in static_graph_controls], form=True), body=True),
+
+    dbc.Card(dbc.Row([dbc.Col(c) for c in static_graph_controls], form=True), body=True),
 
     dbc.Row([
         dbc.Col(
@@ -296,9 +299,7 @@ app.layout = dbc.Container(children=[
     html.Br(),
 
     dbc.Row([
-        dbc.Col(
-        dbc.Card(simulator_controls), width=3
-        ),
+        dbc.Card(simulator_controls),
         dbc.Col(
             dbc.Card(children=[
                 dcc.Loading(id="loading-icon7",
