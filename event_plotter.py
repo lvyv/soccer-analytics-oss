@@ -313,7 +313,7 @@ def plotEvents(eventType, filename, team, team_on_left):
             sizex=1,
             sizey=1,
             sizing="stretch",
-            opacity=0.5,
+            opacity=0.8,
             layer="below")
     )
 

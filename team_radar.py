@@ -92,7 +92,7 @@ def team_radar_builder(filename, team_id):
 
     fig.update_layout(title = "Match KPIs",
             polar=dict(
-            bgcolor='rgba(0, 0, 0, 0)',
+            bgcolor='#2A2A2A',
             radialaxis=dict(
                 visible=True,
                 range=[0, 1],

@@ -378,7 +378,7 @@ def game_simulation_graph(n_clicks, speed, filename):
                       yanchor='bottom')
                             ])
     fig.update_layout(autosize=True)
-    fig.update_layout(modebar=dict(bgcolor='#303030', orientation='v'))
+    fig.update_layout(modebar=dict(bgcolor='rgba(0, 0, 0, 0)', orientation='v'))
     # Disable zoom. It just distorts and is not fine-tunable
     fig.layout.xaxis.fixedrange = True
     fig.layout.yaxis.fixedrange = True
@@ -391,6 +391,14 @@ def game_simulation_graph(n_clicks, speed, filename):
             )
         )
     )
+    # Sets background to be transparent
+    fig.update_layout(template='plotly_dark',
+                      xaxis=dict(
+                          showgrid=False,
+                          showticklabels=False),
+                      plot_bgcolor='rgba(0, 0, 0, 0)',
+                      paper_bgcolor='rgba(0, 0, 0, 0)'
+                      )
     return fig
 
 if __name__ == '__main__':
