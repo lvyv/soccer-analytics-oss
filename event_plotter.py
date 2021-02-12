@@ -217,11 +217,6 @@ def plotEvents(eventType, filename, team, team_on_left):
                 annotations=annotations_list)
 
 
-        # Add halos to markers
-        fig.update_traces(marker=dict(
-            line=dict(width=1,
-                      color='darkgray')),
-            selector=dict(mode='markers'))
     else:
         # This part is for the scatterplots without annotations
         if eventType == 'Shots':
@@ -246,11 +241,6 @@ def plotEvents(eventType, filename, team, team_on_left):
                              hover_name="event_name", text='jersey_number', opacity=0.8,
                              range_x=[0, 1], range_y=[0,1], size='size', size_max=10,
                              hover_data={'Start_X': False, 'Start_Y': False, 'size': False, 'color':False, 'jersey_number':False})
-
-        fig.update_traces(marker=dict(
-            line=dict(width=1,
-                      color='darkgray')),
-            selector=dict(mode='markers'))
 
     # Metrica data starts 0, 0 at top left corner. Need to account for that or markers will be wrong
     fig.update_yaxes(autorange="reversed")
@@ -342,6 +332,7 @@ def plotEvents(eventType, filename, team, team_on_left):
     fig.update_layout(autosize=True)
     fig.update_layout(showlegend=False)
     fig.update_layout(hovermode="closest")
+    fig['layout']['template']['data']['scatter'][0]['marker']['line']['color'] = 'lightgrey'
 
     return fig
 
