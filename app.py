@@ -74,7 +74,7 @@ simulator_controls = [
         daq.Knob(
             id= 'speed-knob',
             label='Playback Speed',
-            value=3,
+            value=2.5,
             max=5,
             color={'default':'#3598DC'},
             size=100
@@ -248,7 +248,8 @@ def radar_graph(radar_file, team):
     Output('game-simulation', 'figure'),
     Input('submit-button','n_clicks'), State('speed-knob', 'value'), State('tracking-file', 'value'), prevent_initial_call=True)
 def game_simulation_graph(n_clicks, speed, filename):
-    game_speed = 600 - speed
+    speed_adjusted = speed * 100
+    game_speed = 600 - speed_adjusted
     fig = fig_from_json('data/'+filename)
     fig.update_layout(margin=dict(l=0, r=20, b=0, t=0))
     fig.update_layout(
