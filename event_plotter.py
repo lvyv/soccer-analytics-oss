@@ -246,7 +246,7 @@ def plotEvents(eventType, filename, team, team_on_left):
     fig.update_yaxes(autorange="reversed")
 
     # Add corner flags to prevent zoom and pitch distortion
-    fig.add_scatter(x=[0, 0, 1, 1], y=[0, 1, 0, 1], mode='markers', marker=dict(size=2, color='white'))
+    fig.add_scatter(x=[0, 0, 1, 1], y=[0, 1, 0, 1], mode='markers', marker=dict(size=2, color='grey'))
 
     # Remove side color scale and hide zero and gridlines
     fig.update_layout(
@@ -292,7 +292,7 @@ def plotEvents(eventType, filename, team, team_on_left):
     image_file = 'assets/Pitch.png'
     fig.update_yaxes(
         scaleanchor="x",
-        scaleratio=.65)
+        scaleratio=.70)
 
     from PIL import Image
     img = Image.open(image_file)
