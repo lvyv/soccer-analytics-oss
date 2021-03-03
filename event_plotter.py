@@ -88,7 +88,7 @@ def left_justify_events(df, team_on_left):
     df = pd.concat([df_half1, df_half2])
     return df
 
-# Once number of clusters is auto-calculated, graph the cluseters
+# Once number of clusters is auto-calculated, graph the clusters
 def create_cluster_graph(df, num_clusters):
     # creates a new trace for each set of data
     fig = make_subplots(
@@ -244,6 +244,9 @@ def plotEvents(eventType, filename, team, team_on_left):
 
     # Metrica data starts 0, 0 at top left corner. Need to account for that or markers will be wrong
     fig.update_yaxes(autorange="reversed")
+
+    # Add corner flags to prevent zoom and pitch distortion
+    fig.add_scatter(x=[0, 0, 1, 1], y=[0, 1, 0, 1], mode='markers', marker=dict(size=2, color='white'))
 
     # Remove side color scale and hide zero and gridlines
     fig.update_layout(
