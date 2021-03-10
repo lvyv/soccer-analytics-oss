@@ -216,7 +216,7 @@ def event_graph(event_file, team):
         fig_assists = plotEvents('Assists to Shots', event_file, team, 'Home')
         fig_crosses = plotEvents('Crosses', event_file, team, 'Home')
         fig_set_plays = plotEvents('Set Plays', event_file, team, 'Home')
-        fig_progressive_passes = plotEvents('Progressive Passes Into Final 3rd', event_file, team, 'Home')
+        fig_progressive_passes = plotEvents('Progressive Passes', event_file, team, 'Home')
         for x in [fig_shots, fig_assists,fig_crosses, fig_set_plays, fig_progressive_passes]:
             # Change modebar drawing item colour so that it stands out (vs. grey)
             x.update_layout(newshape=dict(line_color='#009BFF'))
@@ -287,6 +287,8 @@ def game_simulation_graph(n_clicks, speed, filename):
                       plot_bgcolor='rgba(0, 0, 0, 0)',
                       paper_bgcolor='rgba(0, 0, 0, 0)'
                       )
+    fig['layout']['template']['data']['scatter'][0]['marker']['line']['color'] = 'white'
+    fig['layout']['template']['data']['scatter'][0]['marker']['opacity'] = .9
     return fig
 
 if __name__ == '__main__':

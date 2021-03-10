@@ -40,7 +40,7 @@ def find_assists(df):
     return assist_df
 
 # Locate and build a dataframe of all set plays, ignoring kick-offs and throw-ins
-def find_set_plays(df):
+def find_set_plays(df, mode):
     sp_df = pd.DataFrame()
 
     count = 0
@@ -60,8 +60,13 @@ def find_set_plays(df):
                     event_type = row['Subtype']
                     sp_list = [passer, receiver, assist_x, assist_y, receipt_x, receipt_y, event_type]
                     sp_df = sp_df.append(pd.Series(sp_list, index=['From', 'To', 'Start_X', 'Start_Y', 'End_X', 'End_Y', 'Type']), ignore_index=True)
+                    if mode == 'progressive':
+                        df = df.drop(index+1)
             except Exception as e:
                 print(e)
+
+    if mode == 'progressive':
+        sp_df = df
 
     sp_df.loc[sp_df.To.isnull(), 'Type'] = 'Incomplete'
     return sp_df
@@ -154,6 +159,54 @@ def drawAnnotations(df):
 
     return annotations_list
 
+def find_progressive_passes(df):
+    #df = df.loc[(df['End_X'] - df['location_x']) > 1000]  # limit passes to those greater than 10M forward
+    df_own_half = df.loc[(df['End_X'] < .5) & (df['Start_X'] < .5)]  # passes in own half
+    df_diff_half = df.loc[(df['End_X'] > .5) & (df['Start_X'] < .5)]  # passes in different half
+    df_opp_half = df.loc[(df['End_X'] > .5) & (df['Start_X'] > .5)]  # passes in opponent's half
+    goal_x = float(1)
+    goal_y = float(.5)
+
+    # Passes in own half
+    if len(df_own_half) > 0:
+        #dist = math.hypot(x2 - x1, y2 - y1)
+        df_own_half['orig_distance_to_goal'] = df_own_half.apply(
+            lambda x: math.hypot(x['Start_X'] - goal_x, x['Start_Y'] - goal_y),
+            axis=1)
+        df_own_half['end_distance_to_goal'] = df_own_half.apply(
+            lambda x: math.hypot(x['End_X'] - goal_x, x['End_Y'] - goal_y),
+            axis=1)
+        df_own_half['distance'] = df_own_half['orig_distance_to_goal'] - df_own_half['end_distance_to_goal']
+        df_own_half = df_own_half.loc[(df_own_half['distance']) >= .30]
+
+    # Passes in both halves
+    if len(df_diff_half) > 0:
+        df_diff_half['orig_distance_to_goal'] = df_diff_half.apply(
+            lambda x: math.hypot(x['Start_X'] - goal_x, x['Start_Y'] - goal_y),
+            axis=1)
+        df_diff_half['end_distance_to_goal'] = df_diff_half.apply(
+        lambda x: math.hypot(x['End_X'] - goal_x, x['End_Y'] - goal_y), axis=1)
+
+        df_diff_half['distance'] = df_diff_half['orig_distance_to_goal'] - df_diff_half['end_distance_to_goal']
+        df_diff_half = df_diff_half.loc[(df_diff_half['distance']) >= .15]
+
+        # Passes in opposition half
+    if len(df_opp_half) > 0:
+        df_opp_half['orig_distance_to_goal'] = df_opp_half.apply(
+            lambda x: math.hypot(x['Start_X'] - goal_x, x['Start_Y'] - goal_y),
+            axis=1)
+        df_opp_half['end_distance_to_goal'] = df_opp_half.apply(
+            lambda x: math.hypot(x['End_X'] - goal_x, x['End_Y'] - goal_y),
+            axis=1)
+        df_opp_half['distance'] = df_opp_half['orig_distance_to_goal'] - df_opp_half['end_distance_to_goal']
+        df_opp_half = df_opp_half.loc[(df_opp_half['distance']) >= .12]
+
+    df_list = [df_own_half, df_diff_half, df_opp_half]  # List of your dataframes
+    df_combo = pd.concat(df_list)
+
+    return df_combo
+
+
 # Main function - graph all football events which occur in a match
 def plotEvents(eventType, filename, team, team_on_left):
     # Read in event csv data file
@@ -172,18 +225,19 @@ def plotEvents(eventType, filename, team, team_on_left):
     events_df=left_justify_events(events_df, team_on_left)
 
     # For events involving the graphing of movement of the ball from one location to another
-    if (eventType == "Progressive Passes Into Final 3rd") or (eventType == "Crosses") or (eventType == "Set Plays") or (eventType == "Assists to Shots"):
+    if (eventType == "Progressive Passes") or (eventType == "Crosses") or (eventType == "Set Plays") or (eventType == "Assists to Shots"):
 
         # Pick proper df based on what's being graphed
         if eventType == 'Assists to Shots':
             df = find_assists(events_df)
         elif eventType == 'Set Plays':
-            df = find_set_plays(events_df)
-        elif eventType == 'Progressive Passes Into Final 3rd':
-            df = events_df.loc[events_df['Type']=='PASS']
+            df = find_set_plays(events_df, 'normal')
+        elif eventType == 'Progressive Passes':
+            df = find_set_plays(events_df, 'progressive')  # take out set plays as they include corners and throw-ins
+            df = df[(df['Start_Y'] > 0) & (df['Start_Y'] < 1)]
+            df = df.loc[events_df['Type']=='PASS']
             df.reset_index(drop=True, inplace=True)
-            df = df.loc[(df['End_X'] - df['Start_X']) > .1] # limit passes to those greater than 10M forward
-            df = df.loc[df['End_X'] > .7]
+            df = find_progressive_passes(df)
         elif eventType == 'Crosses':
             df = events_df.loc[events_df['Subtype'].str.contains('CROSS', na=False)]
             df.reset_index(drop=True, inplace=True)
@@ -206,12 +260,12 @@ def plotEvents(eventType, filename, team, team_on_left):
         df['size'] = 9
 
         # Main graph for A > B events
-        if eventType in ['Crosses', 'Set Plays', 'Assists to Shots', 'Progressive Passes Into Final 3rd']:
+        if eventType in ['Crosses', 'Set Plays', 'Assists to Shots', 'Progressive Passes']:
             colorfactor = df['Type']
             fig = px.scatter(df, x="Start_X", y="Start_Y", color=colorfactor, size='size', text='From',
-                             range_x=[-0.05,1.05], range_y=[-0.05,1.05], size_max=10,hover_name='Type',
+                             range_x=[-0.05,1.05], range_y=[-0.05,1.05], size_max=10, hover_name='Type',
                              color_discrete_map=color_discrete_map, opacity=0.8, #marginal_x="histogram", marginal_y="rug",
-                             hover_data={'Start_X': False, 'Start_Y': False, 'size': False, 'Type':False, 'From':True, 'To':True})
+                             hover_data={'Start_X': False, 'Start_Y': False, 'size': False, 'From':True, 'To':True})
 
             fig.update_layout(
                 annotations=annotations_list)
