@@ -287,6 +287,8 @@ def game_simulation_graph(n_clicks, speed, filename):
                       plot_bgcolor='rgba(0, 0, 0, 0)',
                       paper_bgcolor='rgba(0, 0, 0, 0)'
                       )
+    fig['layout']['template']['data']['scatter'][0]['marker']['line']['color'] = 'white'
+    fig['layout']['template']['data']['scatter'][0]['marker']['opacity'] = .9
     return fig
 
 if __name__ == '__main__':
