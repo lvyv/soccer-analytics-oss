@@ -37,7 +37,7 @@ static_graph_controls = [
                 {'label': i, 'value': i}
                 for i in event_files
             ],
-            value=None,
+            value=event_files[0],
             placeholder="Select a file for events"
         ),
     ]
