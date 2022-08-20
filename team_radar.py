@@ -36,16 +36,16 @@ def normalize_events(df):
         ]
     ]
     df.columns = [
-        "Set Plays",
-        "Passes",
-        "Balls Lost",
-        "Recoveries",
-        "Challenges",
-        "Shots",
-        "Interceptions",
-        "Crosses",
-        "Long Balls",
-        "Free Kicks",
+        "定点球",
+        "过人",
+        "失球",
+        "追球",
+        "抢断",
+        "射门",
+        "断球",
+        "传中",
+        "长传",
+        "任意球",
     ]
 
     # 'Normalize' values from different scales by scaling them as a percentage of max. Use try/except to
@@ -140,7 +140,7 @@ def team_radar_builder(filename, team_id):
     )
 
     fig.update_layout(
-        title="Match KPIs",
+        title="比赛KPI指标",
         polar=dict(
             bgcolor="#2A2A2A",
             radialaxis=dict(visible=True, range=[0, 1], showticklabels=False,),

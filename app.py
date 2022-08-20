@@ -1,9 +1,9 @@
 import dash
-import dash_core_components as dcc
+from dash import dcc
 from event_plotter import plotEvents
 from dash.dependencies import Input, Output, State
 from team_radar import team_radar_builder
-import dash_html_components as html
+from dash import html
 import glob
 import dash_bootstrap_components as dbc
 from fig_generator import fig_from_json
@@ -16,12 +16,12 @@ import dash_daq as daq
 
 # Create list of event csv files available to select from via a pulldown menu
 event_file_list = glob.glob("data/*.csv")
-event_files = [w.replace("data/", "") for w in event_file_list]
+event_files = [w.replace("data\\", "") for w in event_file_list]
 event_files = [s for s in event_files if "Event" in s]
 
 # Create list of tracking json files available to select from via a pulldown menu
 tracking_file_list = glob.glob("data/*.json")
-tracking_files = [w.replace("data/", "") for w in tracking_file_list]
+tracking_files = [w.replace("data\\", "") for w in tracking_file_list]
 tracking_files = [s for s in tracking_files if "json" in s]
 
 app = dash.Dash(
@@ -29,30 +29,30 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.DARKLY],
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"},],
 )
-
+app.title = '复盘分析'
 server = app.server
 
 # Configure controls using Dash Design Kit
 static_graph_controls = [
     dbc.FormGroup(
         [
-            dbc.Label("Event File:"),
+            dbc.Label("比赛数据文件:"),
             dbc.Select(
                 id="event-file",
                 options=[{"label": i, "value": i} for i in event_files],
                 value=None,
-                placeholder="Select a file for events",
+                placeholder="选择比赛数据文件",
             ),
         ]
     ),
     dbc.FormGroup(
         [
-            dbc.Label("Team:"),
+            dbc.Label("参赛队伍:"),
             dbc.Select(
                 id="team-dropdown",
                 options=[{"label": i, "value": i} for i in ["Home", "Away"]],
                 value="Home",
-                placeholder="Select a file for events",
+                placeholder="选择参赛队伍",
             ),
         ]
     ),
@@ -61,12 +61,12 @@ static_graph_controls = [
 simulator_controls = [
     dbc.FormGroup(
         [
-            dbc.Label("Tracking File:"),
+            dbc.Label("比赛日志数据:"),
             dbc.Select(
                 id="tracking-file",
                 options=[{"label": i, "value": i} for i in tracking_files],
                 value=None,
-                placeholder="Select a file for tracking",
+                placeholder="选择需要复盘的赛事数据文件",
             ),
         ]
     ),
@@ -80,14 +80,14 @@ simulator_controls = [
             size=100,
         )
     ),
-    dbc.Button("Submit", className="mr-2", id="submit-button", color="info"),
+    dbc.Button("提交", className="mr-2", id="submit-button", color="info"),
 ]
 
 # Configure main app layout
 app.layout = dbc.Container(
     fluid=True,
     children=[
-        html.Header([html.H3("Match Analysis Tool")]),
+        html.Header([html.H3("复盘分析工具")]),
         dbc.Card(
             dbc.Row([dbc.Col(c) for c in static_graph_controls], form=True), body=True
         ),
@@ -439,4 +439,4 @@ def game_simulation_graph(n_clicks, speed, filename):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)
