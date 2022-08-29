@@ -16,6 +16,9 @@ import plotly.graph_objects as go
 
 # Disable non-applicable warnings
 pd.options.mode.chained_assignment = None  # default='warn'
+REDTROOP = "红方"
+BLUETROOP = "蓝方"
+
 
 # 'Normalize' values (not in a traditional sense, but in terms of percentages during the match)
 def normalize_events(df):
@@ -36,16 +39,16 @@ def normalize_events(df):
         ]
     ]
     df.columns = [
-        "定点球",
-        "过人",
-        "失球",
-        "追球",
-        "抢断",
-        "射门",
-        "断球",
-        "传中",
-        "长传",
-        "任意球",
+        "弹道",
+        "测控",
+        "通信",
+        "指控",
+        "安全",
+        "组织",
+        "指标B",
+        "指标C",
+        "指标D",
+        "指标E",
     ]
 
     # 'Normalize' values from different scales by scaling them as a percentage of max. Use try/except to
@@ -64,7 +67,7 @@ def normalize_events(df):
 def team_radar_builder(filename, team_id):
     # Read in the events data file
     data_file = "data/" + filename
-    events_df = pd.read_csv(data_file)
+    events_df = pd.read_csv(data_file, encoding='utf8')
     events_df = events_df[["Team", "Type", "Subtype"]]
 
     # Count up the events for each team and create a new pivoted dataframe to hold the results
@@ -92,7 +95,7 @@ def team_radar_builder(filename, team_id):
 
     # Create initial figure
     fig = go.Figure()
-    colormap = {"Home": "lightskyblue", "Away": "mintcream"}
+    colormap = {REDTROOP: "red", BLUETROOP: "blue"}
     normalized_df["Team"] = normalized_df.index
     team_row_normalized = normalized_df.loc[normalized_df["Team"] == team_id]
     team_row_normalized.drop("Team", axis=1, inplace=True)

@@ -5,6 +5,6 @@ import plotly.io as pio
 
 
 def fig_from_json(filename):
-    with open(filename, "r") as f:
+    with open(filename, "r",  encoding="utf-8") as f:
         fig = pio.from_json(f.read())
     return fig

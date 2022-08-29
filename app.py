@@ -14,10 +14,12 @@ from initial_figures import (
 )
 import dash_daq as daq
 
+REDTROOP = "红方"
+BLUETROOP = "蓝方"
 # Create list of event csv files available to select from via a pulldown menu
 event_file_list = glob.glob("data/*.csv")
 event_files = [w.replace("data\\", "") for w in event_file_list]
-event_files = [s for s in event_files if "Event" in s]
+event_files = [s for s in event_files if "统计" in s]
 
 # Create list of tracking json files available to select from via a pulldown menu
 tracking_file_list = glob.glob("data/*.json")
@@ -50,8 +52,8 @@ static_graph_controls = [
             dbc.Label("演训队伍:"),
             dbc.Select(
                 id="team-dropdown",
-                options=[{"label": i, "value": i} for i in ["Home", "Away"]],
-                value="Home",
+                options=[{"label": i, "value": i} for i in [REDTROOP, BLUETROOP]],
+                value=REDTROOP,
                 placeholder="选择演训队伍",
             ),
         ]
@@ -345,12 +347,12 @@ app.layout = dbc.Container(
 )
 def event_graph(event_file, team):
     if team is not None and event_file is not None:
-        fig_shots = plot_events("Shots", event_file, team, "Home")
-        fig_assists = plot_events("Assists to Shots", event_file, team, "Home")
-        fig_crosses = plot_events("Crosses", event_file, team, "Home")
-        fig_set_plays = plot_events("Set Plays", event_file, team, "Home")
+        fig_shots = plot_events("Shots", event_file, team, REDTROOP)
+        fig_assists = plot_events("Assists to Shots", event_file, team, REDTROOP)
+        fig_crosses = plot_events("Crosses", event_file, team, REDTROOP)
+        fig_set_plays = plot_events("Set Plays", event_file, team, REDTROOP)
         fig_progressive_passes = plot_events(
-            "Progressive Passes", event_file, team, "Home"
+            "Progressive Passes", event_file, team, REDTROOP
         )
         for x in [
             fig_shots,

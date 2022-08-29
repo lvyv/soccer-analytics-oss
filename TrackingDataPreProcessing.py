@@ -1,6 +1,8 @@
 import pandas as pd
-import numpy as np
+# import numpy as np
 
+REDTROOP = "红方"
+BLUETROOP = "蓝方"
 # raw_df = pd.read_csv(cv_file, names=header_list, error_bad_lines=False, dtype=str)
 raw_df1 = pd.read_csv("data/source/Sample_Game_2_RawTrackingData_Away_Team.csv")
 # sample every 5th row
@@ -19,7 +21,7 @@ for x in range(0, 13):
     df_temp.columns = ["half", "frame", "time", "x", "y"]
     df_temp["jersey_number"] = raw_df1.columns[column]
     df = pd.concat([df, df_temp]).reset_index(drop=True)
-df["team"] = "Away"
+df["team"] = BLUETROOP
 df.loc[df["jersey_number"] == "0", "team"] = "Ball"
 df.loc[df["x"].isna(), "x"] = None
 df.loc[df["y"].isna(), "y"] = None
@@ -34,7 +36,7 @@ for x in range(0, 12):
     df_temp2.columns = ["half", "frame", "time", "x", "y"]
     df_temp2["jersey_number"] = raw_df2.columns[column]
     df2 = pd.concat([df2, df_temp2]).reset_index(drop=True)
-df2["team"] = "Home"
+df2["team"] = "红方"
 df2.loc[df2["x"].isna(), "x"] = None
 df2.loc[df2["y"].isna(), "y"] = None
 df2 = df2[df2["x"].notna()]

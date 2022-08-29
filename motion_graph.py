@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import os
-import numpy as np
+# import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 import dash
@@ -13,6 +13,8 @@ from datetime import datetime
 
 # Disable non-applicable warnings
 pd.options.mode.chained_assignment = None  # default='warn'
+REDTROOP = "红方"
+BLUETROOP = "蓝方"
 
 
 # Plots moving football data in plotly using built-in animation functionality
@@ -64,8 +66,8 @@ def game_simulator(file, half, start, stop):
     # df = df.sort_values(by=['half', 'time'])
 
     colour0 = "#009BFF"
-    colour1 = "grey"
-    colour_ball = "red"
+    colour1 = "red"
+    colour_ball = "grey"
 
     # Make sure jersey number is an int not a decimal
     df["jersey_number"] = (
@@ -75,7 +77,7 @@ def game_simulator(file, half, start, stop):
     # null out jersey number field for ball or it shows a zero on the marker, which looks stupid
     df["jersey_number"].replace("0", "", inplace=True)
 
-    color_discrete_map = {"Home": colour0, "Away": colour1, "Ball": colour_ball}
+    color_discrete_map = {REDTROOP: colour0, BLUETROOP: colour1, "军旗": colour_ball}
 
     # Plotly Express version
     fig = px.scatter(
@@ -108,7 +110,7 @@ def game_simulator(file, half, start, stop):
         x=[0, 0, 1, 1],
         y=[0, 1, 0, 1],
         mode="markers",
-        marker=dict(size=1, color="grey"),
+        marker=dict(size=1, color=colour1),
         name="Flags",
     )
 
@@ -178,10 +180,10 @@ def game_simulator(file, half, start, stop):
     fig["layout"]["sliders"][0]["pad"] = dict(r=0, t=0.0,)
     fig["layout"]["sliders"][0]["minorticklen"] = 2
     fig["layout"]["sliders"][0]["ticklen"] = 5
-    fig["layout"]["sliders"][0]["tickcolor"] = "grey"
-    fig["layout"]["sliders"][0]["font"]["color"] = "grey"
-    fig["layout"]["sliders"][0]["bgcolor"] = "grey"
-    fig["layout"]["sliders"][0]["bordercolor"] = "grey"
+    fig["layout"]["sliders"][0]["tickcolor"] = colour1
+    fig["layout"]["sliders"][0]["font"]["color"] = colour1
+    fig["layout"]["sliders"][0]["bgcolor"] = colour1
+    fig["layout"]["sliders"][0]["bordercolor"] = colour1
     fig["layout"]["template"]["data"]["scatter"][0]["marker"]["line"][
         "color"
     ] = "lightgrey"
@@ -214,7 +216,7 @@ def game_simulator(file, half, start, stop):
     )
     fig.update_layout(autosize=True, hovermode="closest")
     # fig.update_layout(showlegend=False)
-    fig.update_layout(legend=dict(font=dict(family="Arial", size=10, color="grey")))
+    fig.update_layout(legend=dict(font=dict(family="Arial", size=10, color=colour1)))
 
     # Hide corner flag trace in the legend
     for trace in fig["data"]:
