@@ -2,6 +2,7 @@ import plotly.express as px
 import os
 import plotly.graph_objects as go
 
+
 # Create initial placeholder figure for game simulator
 def initial_figure_simulator():
     # fig = px.scatter(x=[0, 0, 105, 105], y=[69, -2, 69, -2])

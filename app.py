@@ -1,6 +1,6 @@
 import dash
 from dash import dcc
-from event_plotter import plotEvents
+from event_plotter import plot_events
 from dash.dependencies import Input, Output, State
 from team_radar import team_radar_builder
 from dash import html
@@ -27,7 +27,7 @@ tracking_files = [s for s in tracking_files if "json" in s]
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.DARKLY],
-    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"},],
+    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}, ],
 )
 app.title = '复盘分析'
 server = app.server
@@ -36,23 +36,23 @@ server = app.server
 static_graph_controls = [
     dbc.FormGroup(
         [
-            dbc.Label("比赛数据文件:"),
+            dbc.Label("演训数据文件:"),
             dbc.Select(
                 id="event-file",
                 options=[{"label": i, "value": i} for i in event_files],
                 value=None,
-                placeholder="选择比赛数据文件",
+                placeholder="选择演训数据文件",
             ),
         ]
     ),
     dbc.FormGroup(
         [
-            dbc.Label("参赛队伍:"),
+            dbc.Label("演训队伍:"),
             dbc.Select(
                 id="team-dropdown",
                 options=[{"label": i, "value": i} for i in ["Home", "Away"]],
                 value="Home",
-                placeholder="选择参赛队伍",
+                placeholder="选择演训队伍",
             ),
         ]
     ),
@@ -61,19 +61,19 @@ static_graph_controls = [
 simulator_controls = [
     dbc.FormGroup(
         [
-            dbc.Label("比赛日志数据:"),
+            dbc.Label("演训日志数据:"),
             dbc.Select(
                 id="tracking-file",
                 options=[{"label": i, "value": i} for i in tracking_files],
                 value=None,
-                placeholder="选择需要复盘的赛事数据文件",
+                placeholder="选择需要复盘的演训数据文件",
             ),
         ]
     ),
     dbc.Card(
-        daq.Knob(
+        daq.Knob(       # noqa
             id="speed-knob",
-            label="Playback Speed",
+            label="复盘速度",
             value=2.5,
             max=5,
             color={"default": "#3598DC"},
@@ -330,6 +330,7 @@ app.layout = dbc.Container(
     ],
 )
 
+
 # Callback for events data
 @app.callback(
     [
@@ -344,11 +345,11 @@ app.layout = dbc.Container(
 )
 def event_graph(event_file, team):
     if team is not None and event_file is not None:
-        fig_shots = plotEvents("Shots", event_file, team, "Home")
-        fig_assists = plotEvents("Assists to Shots", event_file, team, "Home")
-        fig_crosses = plotEvents("Crosses", event_file, team, "Home")
-        fig_set_plays = plotEvents("Set Plays", event_file, team, "Home")
-        fig_progressive_passes = plotEvents(
+        fig_shots = plot_events("Shots", event_file, team, "Home")
+        fig_assists = plot_events("Assists to Shots", event_file, team, "Home")
+        fig_crosses = plot_events("Crosses", event_file, team, "Home")
+        fig_set_plays = plot_events("Set Plays", event_file, team, "Home")
+        fig_progressive_passes = plot_events(
             "Progressive Passes", event_file, team, "Home"
         )
         for x in [
@@ -400,10 +401,11 @@ def radar_graph(radar_file, team):
     State("tracking-file", "value"),
     prevent_initial_call=True,
 )
-def game_simulation_graph(n_clicks, speed, filename):
+def game_simulation(n_clicks, speed, filename):
+    print(n_clicks)
     speed_adjusted = speed * 100
     game_speed = 600 - speed_adjusted
-    fig = fig_from_json("data/" + filename)
+    fig = fig_from_json("data/" + filename)     # noqa
     fig.update_layout(margin=dict(l=0, r=20, b=0, t=0))
     fig.update_layout(newshape=dict(line_color="#009BFF"))
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = game_speed

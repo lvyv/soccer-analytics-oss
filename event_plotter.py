@@ -12,6 +12,7 @@ from plotly.subplots import make_subplots
 # Disable non-applicable Pandas warnings
 pd.options.mode.chained_assignment = None  # default='warn'
 
+
 # Find and piece together assists by finding shots, then checking if the action directly before
 # a shot was a pass (or cross, which is treated as a subset of pass in this dataset).
 # If so, count it as an assist.
@@ -178,7 +179,7 @@ def get_num_clusters(df, maxclusters):
 
 
 # Draw arrow annotations for passes, crosses, etc.
-def drawAnnotations(df):
+def draw_annotations(df):
     # Create annotations for all passes
     annotations_list = []
     for index, row in df.iterrows():
@@ -273,7 +274,7 @@ def find_progressive_passes(df):
 
 
 # Main function - graph all football events which occur in a match
-def plotEvents(eventType, filename, team, team_on_left):
+def plot_events(evtype, filename, team, team_on_left):
     # Read in event csv data file
     data_file = "data/" + filename
     events_df = pd.read_csv(data_file)
@@ -291,18 +292,18 @@ def plotEvents(eventType, filename, team, team_on_left):
 
     # For events involving the graphing of movement of the ball from one location to another
     if (
-        (eventType == "Progressive Passes")
-        or (eventType == "Crosses")
-        or (eventType == "Set Plays")
-        or (eventType == "Assists to Shots")
+        (evtype == "Progressive Passes")
+        or (evtype == "Crosses")
+        or (evtype == "Set Plays")
+        or (evtype == "Assists to Shots")
     ):
 
         # Pick proper df based on what's being graphed
-        if eventType == "Assists to Shots":
+        if evtype == "Assists to Shots":
             df = find_assists(events_df)
-        elif eventType == "Set Plays":
+        elif evtype == "Set Plays":
             df = find_set_plays(events_df, "normal")
-        elif eventType == "Progressive Passes":
+        elif evtype == "Progressive Passes":
             df = find_set_plays(
                 events_df, "progressive"
             )  # take out set plays as they include corners and throw-ins
@@ -310,7 +311,7 @@ def plotEvents(eventType, filename, team, team_on_left):
             df = df.loc[events_df["Type"] == "PASS"]
             df.reset_index(drop=True, inplace=True)
             df = find_progressive_passes(df)
-        elif eventType == "Crosses":
+        elif evtype == "Crosses":
             df = events_df.loc[events_df["Subtype"].str.contains("CROSS", na=False)]
             df.reset_index(drop=True, inplace=True)
 
@@ -323,7 +324,7 @@ def plotEvents(eventType, filename, team, team_on_left):
         # Draw the annotation arrows for passes etc. as long as there aren't too many
         # Where there ARE too many then cluster and create separate traces for each cluster
         if df_size > 1:  # or eventType == 'SetPlay':
-            annotations_list = drawAnnotations(df)
+            annotations_list = draw_annotations(df)
         else:
             annotations_list = []
 
@@ -342,7 +343,7 @@ def plotEvents(eventType, filename, team, team_on_left):
         df["size"] = 9
 
         # Main graph for A > B events
-        if eventType in [
+        if evtype in [
             "Crosses",
             "Set Plays",
             "Assists to Shots",
@@ -375,13 +376,13 @@ def plotEvents(eventType, filename, team, team_on_left):
 
     else:
         # This part is for the scatterplots without annotations
-        if eventType == "Shots":
+        if evtype == "Shots":
             filtered_df = events_df.loc[events_df["Type"] == "SHOT"]
         filtered_df["size"] = 10
 
         # Count number of rows before clustering
         count_row = filtered_df.shape[0]
-        if count_row > 4 and eventType == "Shots":
+        if count_row > 4 and evtype == "Shots":
             reduced_df = filtered_df[["Start_X", "Start_Y"]]
             m = KMeans(get_num_clusters(reduced_df, 6))
             m.fit(reduced_df)
@@ -461,7 +462,7 @@ def plotEvents(eventType, filename, team, team_on_left):
     # Format the title header to be centered
     fig.update_layout(
         title={
-            "text": eventType,
+            "text": evtype,
             "y": 0.95,
             "x": 0.50,
             "xanchor": "center",

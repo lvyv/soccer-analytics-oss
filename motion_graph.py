@@ -14,6 +14,7 @@ from datetime import datetime
 # Disable non-applicable warnings
 pd.options.mode.chained_assignment = None  # default='warn'
 
+
 # Plots moving football data in plotly using built-in animation functionality
 # This graph is based on Metrica Elite data and would need modified (minimally) for any other source data
 # Execute this script in order to create the .json file that will be used by the main app. This file
