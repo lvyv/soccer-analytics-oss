@@ -29,7 +29,7 @@ def game_simulator(file, half, start, stop):
     print("Process started at: ", datetime.now())
 
     file_plus_path = "data/" + file
-    df = pd.read_csv(file_plus_path, error_bad_lines=False)
+    df = pd.read_csv(file_plus_path, encoding='utf8', error_bad_lines=False)
 
     df["time"] = df["time"].astype(float)
     df["half"] = df["half"].astype(int)
@@ -56,7 +56,7 @@ def game_simulator(file, half, start, stop):
     df = df.where(pd.notnull(df), None)
 
     # Rename teamId column so it looks nicer when displayed on Legend
-    df = df.rename(columns={"team": "Team"})
+    df = df.rename(columns={"team": "参训方"})
 
     # Limit time column to two decimals
     df["time"] = df["time"].astype(float)
@@ -84,14 +84,14 @@ def game_simulator(file, half, start, stop):
         df,
         x="x",
         y="y",
-        color="Team",
+        color="参训方",
         hover_name="jersey_number",
         animation_frame="time",
         animation_group="jersey_number",
         range_x=[-0.05, 1.05],
         range_y=[-0.05, 1.05],
         size="size",
-        size_max=10,
+        size_max=9,
         opacity=0.8,
         color_discrete_map=color_discrete_map,
         text="jersey_number",
@@ -100,7 +100,7 @@ def game_simulator(file, half, start, stop):
             "y": False,
             "time": False,
             "size": False,
-            "Team": False,
+            "参训方": False,
             "jersey_number": False,
         },
     )
@@ -136,7 +136,7 @@ def game_simulator(file, half, start, stop):
     fig.update_xaxes(showticklabels=False, title_text="")
     fig.update_yaxes(showticklabels=False, title_text="")
 
-    image_file = "assets/Pitch.png"
+    image_file = "assets/replaybg.png"
     image_path = os.path.join(os.getcwd(), image_file)
 
     from PIL import Image
@@ -158,9 +158,8 @@ def game_simulator(file, half, start, stop):
         )
     )
 
-    ############  Playback Speed Setting  ##################
+    #  Playback Speed Setting
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
-    ###############################################
 
     fig["layout"]["sliders"][0]["pad"]["t"] = 0
     fig["layout"]["updatemenus"][0]["pad"]["t"] = 0
@@ -177,7 +176,7 @@ def game_simulator(file, half, start, stop):
     )
 
     # slider format and adjustments for aesthetic purposes
-    fig["layout"]["sliders"][0]["pad"] = dict(r=0, t=0.0,)
+    fig["layout"]["sliders"][0]["pad"] = dict(r=0, t=0.0, )
     fig["layout"]["sliders"][0]["minorticklen"] = 2
     fig["layout"]["sliders"][0]["ticklen"] = 5
     fig["layout"]["sliders"][0]["tickcolor"] = colour1
@@ -229,7 +228,7 @@ def game_simulator(file, half, start, stop):
             "Please enter a name for the json file to be exported (ending with .json): "
         )
         export_file_name = "data/" + export_file_name
-        with open(export_file_name, "w") as f:
+        with open(export_file_name, "w", encoding='utf-8') as f:
             # json_data = fig.to_json()
             pio.write_json(fig, f)
             f.close()

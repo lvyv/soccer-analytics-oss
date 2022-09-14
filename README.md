@@ -1,20 +1,20 @@
-# Soccer Match Analytics
+# 复盘分析工具
 
-## Overview
+## 概览
 
-* `Soccer Match Analytics` helps coaches and analysts to analyze the events and view a digital recreation of action in a single match
-  
-## Usage
-The app is actually comprised of two parts: a visual app and a game animation preparation script. This pre-preparation of animated game activity is necessary in order to speed up the graphical rendering process and minimize the amount of data processing downloading required to view a match. It is recommended to process no more than 25 minutes of a match at at time. Beyond this threshold it may be too difficult to create and render graphs.
+* `复盘分析工具` 协助演训人员分析演训事件并复现演训过程。
 
-Pre-processing of animated match data can be accomplished by doing the following:
-- Executing the motion-graph.py script and selecting the time period of a match that you would like to pre-process (again in max 25 minute windows). You will need to select a .csv tracking file when executing the script.
-- Save the resulting file in the data directory and name it using a .json file extension
-- The file will now be visible and selectable within the app 
-- The submit button must be selected to view the match
+## 快速开始
+应用包含数据预处理和数据绘制两个部份。
 
-The event viewer is fairly self-explanatory and the user can select the team that they wish to see using the menus at the very top of the app. 
+（1）数据预处理
+- 执行motion-graph.py脚本，输入原始数据文件（MetricaTrackingData.csv）和时间窗口。 
+- 保存处理结果为json文件（abc.json），该json可以直接plotly绘图。
 
-## Acknowledgements
-With great gratitude I would like to thank Bruno Dadnino and his team at Metrica Sports (https://metrica-sports.com/about-us/) for the sample tracking and event data used in this application.
-The original files are here: https://github.com/metrica-sports/sample-data. These files are part of Metrica's Elite Data product. So if you are subscribers to the Elite Data package you will be able to use those files with this application with very minimal changes required (they have been very lightly modified for the purposes of this app). Just copy the format used in the demo files (the changes/differences are very small). Better yet, do it programmatically and it's even easier!
+（2）事件查看和复盘
+- 运行app.py脚本，可以选择前面生成的json文件（abc.json），重放演训复盘。
+- 运行app.py脚本，还可以看到雷达图及不同参训方的评估指标图。
+
+
+## 致谢
+原始数据来自：https://github.com/metrica-sports/sample-data. 

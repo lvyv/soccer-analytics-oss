@@ -12,6 +12,7 @@ from initial_figures import (
     initial_figure_simulator,
     initial_figure_events,
 )
+from pages import overview
 import dash_daq as daq
 
 REDTROOP = "红方"
@@ -38,12 +39,12 @@ server = app.server
 static_graph_controls = [
     dbc.FormGroup(
         [
-            dbc.Label("演训数据文件:"),
+            dbc.Label("演训事件文件:"),
             dbc.Select(
                 id="event-file",
                 options=[{"label": i, "value": i} for i in event_files],
                 value=None,
-                placeholder="选择演训数据文件",
+                placeholder="选择演训事件文件",
             ),
         ]
     ),
@@ -73,7 +74,7 @@ simulator_controls = [
         ]
     ),
     dbc.Card(
-        daq.Knob(       # noqa
+        daq.Knob(  # noqa
             id="speed-knob",
             label="复盘速度",
             value=2.5,
@@ -329,7 +330,11 @@ app.layout = dbc.Container(
             form=True,
             no_gutters=False,
         ),
+        html.Div(
+            [dcc.Location(id="url", refresh=False), html.Div(id="page-content")]
+        )
     ],
+
 )
 
 
@@ -407,7 +412,7 @@ def game_simulation(n_clicks, speed, filename):
     print(n_clicks)
     speed_adjusted = speed * 100
     game_speed = 600 - speed_adjusted
-    fig = fig_from_json("data/" + filename)     # noqa
+    fig = fig_from_json("data/" + filename)  # noqa
     fig.update_layout(margin=dict(l=0, r=20, b=0, t=0))
     fig.update_layout(newshape=dict(line_color="#009BFF"))
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = game_speed
@@ -442,5 +447,10 @@ def game_simulation(n_clicks, speed, filename):
     return fig
 
 
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+def display_page(pathname):
+    return overview.create_layout(app)
+
+
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)

@@ -1,0 +1,11 @@
+/node_modules/
+/dist/
+package-lock.json
+size-plugin.json
+
+cypress/screenshots/
+cypress/videos/
+cypress/fixtures/
+cypress/support/
+__pycache__/
+.idea/
